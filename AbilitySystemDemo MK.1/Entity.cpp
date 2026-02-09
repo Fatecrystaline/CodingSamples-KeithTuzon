@@ -3,6 +3,14 @@
 #include "StatusEffect.h"
 #include "CombatLog.h"
 
+/*
+    Entity Implementation
+
+    Handles updating abilities and status effects each tick.
+    Contains logic for refreshing existing status effects instead of stacking.
+*/
+
+
 Entity::Entity(const std::string& name, int hp, int armor, int str, int level)
     : name(name), hp(hp), armor(armor), strength(str), level(level) {}
 
@@ -21,16 +29,28 @@ void Entity::Update(float deltaTime)
     }
 }
 
-void Entity::TryUseAbilities(Entity& target)
+void Entity::TryUseAbilities(Entity& target, bool reportStatus)
 {
     for (auto& ability : abilities)
     {
-        if (ability->IsReady())
+        float cd = ability->GetRemainingCooldown();
+
+        if (cd <= 0.0f)
         {
+            CombatLog::Log(name + " uses " + ability->GetName() + " on " + target.GetName());
             ability->Use(*this, target);
+        }
+        else if (reportStatus)
+        {
+            CombatLog::Log(
+                name + "'s " + ability->GetName() +
+                " is on cooldown (" + std::to_string((int)cd) + "s remaining)"
+            );
         }
     }
 }
+
+
 
 void Entity::ApplyDamage(int amount, const std::string& source)
 {
@@ -43,11 +63,28 @@ void Entity::ApplyDamage(int amount, const std::string& source)
     }
 }
 
+void Entity::TakeDamage(int amount)
+{
+    hp -= amount;
+    if (hp < 0)
+        hp = 0;
+}
+
 
 void Entity::AddStatusEffect(std::unique_ptr<StatusEffect> effect)
 {
+    for (auto& existing : effects)
+    {
+        if (std::string(existing->GetName()) == effect->GetName())
+        {
+            existing->Refresh();  // refresh instead of adding
+            return;
+        }
+    }
+
     effects.push_back(std::move(effect));
 }
+
 
 void Entity::AddAbility(std::unique_ptr<Ability> ability)
 {
@@ -55,7 +92,6 @@ void Entity::AddAbility(std::unique_ptr<Ability> ability)
 }
 
 bool Entity::IsAlive() const { return hp > 0; }
-int Entity::GetHP() const { return hp; }
 int Entity::GetArmor() const { return armor; }
 int Entity::GetStrength() const { return strength; }
 int Entity::GetLevel() const { return level; }
