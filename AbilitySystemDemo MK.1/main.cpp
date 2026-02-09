@@ -30,31 +30,25 @@ int main()
     float time = 0.0f;
     float logTimer = 0.0f;
 
-   while (player.IsAlive() && skeleton.IsAlive())
+while (player.IsAlive() && skeleton.IsAlive())
 {
-    // FIRST: attempt abilities based on current cooldown state
-   bool shouldReport = (static_cast<int>(time) % 2 == 0);
-   
-   player.TryUseAbilities(skeleton, shouldReport);
-   skeleton.TryUseAbilities(player, shouldReport);
-
-
-    // THEN: update timers and effects
+    // Tick timers/effects first so cooldown counts down cleanly each second
     player.Update(1.0f);
     skeleton.Update(1.0f);
 
-    time += 1.0f;
-    logTimer += 1.0f;
+    // Attempt actions; if on cooldown, report it (because we're logging every second)
+    player.TryUseAbilities(skeleton, true);
+    skeleton.TryUseAbilities(player, true);
 
-    if (logTimer >= 2.0f)
-    {
-        CombatLog::Flush(time);
-        logTimer = 0.0f;
-    }
+    time += 1.0f;
+
+    CombatLog::Flush(time);
 }
+
 
 
     CombatLog::Flush(time);
 
     return 0;
 }
+
