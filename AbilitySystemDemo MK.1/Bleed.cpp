@@ -2,6 +2,14 @@
 #include "Entity.h"
 #include "CombatLog.h"
 
+/*
+    Bleed Implementation
+
+    Separates damage ticking (every second) from logging (every 3 seconds).
+    Ensures exactly one log per interval regardless of frame/update rate.
+*/
+
+
 Bleed::Bleed(int damagePerTick)
     : damagePerTick(damagePerTick) {}
 
@@ -37,4 +45,3 @@ bool Bleed::IsExpired() const
 {
     return duration <= 0.0f;
 }
-
