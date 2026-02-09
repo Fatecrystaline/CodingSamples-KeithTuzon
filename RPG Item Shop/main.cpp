@@ -4,9 +4,7 @@
 #include <fstream>
 #include <memory>
 
-// =====================
 // Base Item class
-// =====================
 class Item {
 protected:
     std::string name;
@@ -31,9 +29,7 @@ public:
     double getCost() const { return cost; }
 };
 
-// =====================
 // Weapon
-// =====================
 class Weapon : public Item {
     double attackPower;
 
@@ -51,9 +47,7 @@ public:
     }
 };
 
-// =====================
 // Consumable
-// =====================
 class Consumable : public Item {
     std::string effect;
 
@@ -71,9 +65,7 @@ public:
     }
 };
 
-// =====================
 // Equipment
-// =====================
 class Equipment : public Item {
     std::string equipmentType;
 
@@ -91,15 +83,13 @@ public:
     }
 };
 
-// =====================
 // Utility Functions
-// =====================
 void displayShop(const std::vector<std::unique_ptr<Item>>& shopItems) {
-    std::cout << "\nWelcome to the Item Shop\n";
-    std::cout << "========================\n";
+    std::cout << "\nWelcome to the Item Shop!\n";
+    std::cout << "=========================\n";
     for (const auto& item : shopItems) {
         item->displayItem();
-        std::cout << "------------------------\n";
+        std::cout << "-------------------------\n";
     }
 }
 
@@ -118,9 +108,7 @@ void displayInventory() {
     }
 }
 
-// =====================
 // Main
-// =====================
 int main() {
     int gold = 100;
     int menuChoice = 0;
@@ -132,17 +120,30 @@ int main() {
 
     std::vector<std::unique_ptr<Item>> shopItems;
 
+    // ITEM LIST
     shopItems.push_back(std::make_unique<Consumable>(
-        "HealingPotion", "Restores 50 health points", 15.0, "Restore Health"));
+        "HealingPotion", "Restores 50 health points", 15.0, "Restores health"));
+
+    shopItems.push_back(std::make_unique<Equipment>(
+        "SteelHelmet", "A standard helmet that provides protection", 40.0, "Armor"));
 
     shopItems.push_back(std::make_unique<Weapon>(
         "SteelSword", "A sharp sword for attacking", 25.0, 50.0));
 
     shopItems.push_back(std::make_unique<Equipment>(
-        "SteelHelmet", "Standard protective helmet", 40.0, "Armor"));
+        "WizardCap", "A magic cap that boosts magic potential", 40.0, "Magic"));
+
+    shopItems.push_back(std::make_unique<Equipment>(
+        "Wand", "A tool used to cast simple magic", 30.0, "Magic"));
 
     shopItems.push_back(std::make_unique<Consumable>(
-        "Apple", "Restores 25 health points", 10.0, "Restore Health"));
+        "BeeHive", "Unleashes a hive of angry bees to poison foes", 20.0, "Poison effect"));
+
+    shopItems.push_back(std::make_unique<Consumable>(
+        "Apple", "Restores 25 health points", 10.0, "Restores health"));
+
+    shopItems.push_back(std::make_unique<Equipment>(
+        "Boots", "Simple boots that provide extra speed", 30.0, "Armor"));
 
     displayShop(shopItems);
 
@@ -184,7 +185,7 @@ int main() {
             std::cout << "Gold: " << gold << "\n";
         }
         else if (menuChoice == 3) {
-            std::cout << "Thanks for visiting!\n";
+            std::cout << "Thanks for stopping by!\n";
             shopping = false;
         }
         else {
